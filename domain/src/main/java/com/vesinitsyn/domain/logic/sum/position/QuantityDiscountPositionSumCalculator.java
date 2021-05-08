@@ -10,6 +10,26 @@ public class QuantityDiscountPositionSumCalculator implements PositionSumCalcula
     public BigDecimal calculate(BigDecimal price,
                                 BigDecimal quantity,
                                 QuantityDiscount discount) {
-        throw new UnsupportedOperationException();
+        BigDecimal discountPrice = discount.getPrice();
+        BigDecimal discountQuantity = discount.getQuantity();
+        BigDecimal discountsNumber = quantity.divideToIntegralValue(discountQuantity);
+
+        BigDecimal discountedWatchesSum = discountsNumber.multiply(discountPrice);
+
+        BigDecimal fullPriceQuantity = calculateFullPriceWatchesQuantity(
+                quantity,
+                discountQuantity,
+                discountsNumber
+        );
+        BigDecimal fullPriceWatchesSum = fullPriceQuantity.multiply(price);
+
+        return fullPriceWatchesSum.add(discountedWatchesSum);
+    }
+
+    private BigDecimal calculateFullPriceWatchesQuantity(BigDecimal totalWatchesQuantity,
+                                                         BigDecimal discountQuantity,
+                                                         BigDecimal discountsNumber) {
+        BigDecimal discountedWatchesQuantity = discountQuantity.multiply(discountsNumber);
+        return totalWatchesQuantity.subtract(discountedWatchesQuantity);
     }
 }
