@@ -9,7 +9,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.util.BigDecimalComparator.BIG_DECIMAL_COMPARATOR;
 
 @ExtendWith(MockitoExtension.class)
 class NoDiscountPositionSumCalculatorTest {
@@ -31,7 +32,9 @@ class NoDiscountPositionSumCalculatorTest {
         );
 
         // Then
-        assertEquals(0, expectedPositionSum.compareTo(actualPositionSum));
+        assertThat(actualPositionSum)
+                .usingComparator(BIG_DECIMAL_COMPARATOR)
+                .isEqualTo(expectedPositionSum);
     }
 
     public static Object[][] noDiscountProvider() {
