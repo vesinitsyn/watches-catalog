@@ -1,5 +1,6 @@
 package com.vesinitsyn.domain.logic.sum.basket;
 
+import com.vesinitsyn.domain.logic.sum.basket.validation.WatchesValidationService;
 import com.vesinitsyn.domain.model.Basket;
 import com.vesinitsyn.domain.model.Watch;
 import com.vesinitsyn.infrastructure.WatchesStorage;
@@ -18,6 +19,7 @@ import static java.util.stream.Collectors.*;
 public class CreateBasketService {
 
     private final WatchesStorage watchesStorage;
+    private final WatchesValidationService watchesValidationService;
 
     public Basket createBasket(List<String> purchasedWatchIds) {
         if (purchasedWatchIds == null || purchasedWatchIds.isEmpty()) {
@@ -27,6 +29,7 @@ public class CreateBasketService {
                 .collect(groupingBy(identity(), counting()));
         Set<String> uniqueWatchIds = quantityByWatchId.keySet();
         Set<Watch> watches = watchesStorage.findByIds(uniqueWatchIds);
+        watchesValidationService.validate(watches, uniqueWatchIds);
         Map<Watch, BigDecimal> quantityByWatch = watches.stream()
                 .collect(toMap(
                         identity(),

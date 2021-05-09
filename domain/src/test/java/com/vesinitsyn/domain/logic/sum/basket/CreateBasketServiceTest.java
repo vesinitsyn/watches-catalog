@@ -1,5 +1,7 @@
 package com.vesinitsyn.domain.logic.sum.basket;
 
+import com.vesinitsyn.domain.logic.sum.basket.validation.WatchesValidationService;
+import com.vesinitsyn.domain.logic.sum.basket.validation.exception.WatchesValidationException;
 import com.vesinitsyn.domain.model.Basket;
 import com.vesinitsyn.domain.model.Watch;
 import com.vesinitsyn.infrastructure.WatchesStorage;
@@ -17,6 +19,7 @@ import java.util.Set;
 
 import static com.vesinitsyn.domain.model.Basket.emptyBasket;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,6 +27,9 @@ class CreateBasketServiceTest {
 
     @Mock
     private WatchesStorage watchesStorage;
+
+    @Mock
+    private WatchesValidationService watchesValidationService;
 
     @InjectMocks
     private CreateBasketService createBasketService;
@@ -41,7 +47,7 @@ class CreateBasketServiceTest {
         assertThat(actualBasket)
                 .usingRecursiveComparison()
                 .isEqualTo(expectedBasket);
-        verifyNoInteractions(watchesStorage);
+        verifyNoInteractions(watchesStorage, watchesValidationService);
     }
 
     @Test
@@ -57,7 +63,7 @@ class CreateBasketServiceTest {
         assertThat(actualBasket)
                 .usingRecursiveComparison()
                 .isEqualTo(expectedBasket);
-        verifyNoInteractions(watchesStorage);
+        verifyNoInteractions(watchesStorage, watchesValidationService);
     }
 
     @Test
@@ -68,8 +74,10 @@ class CreateBasketServiceTest {
 
         // mock WatchesStorage
         Watch watch = new Watch(watchId, "Rolex", BigDecimal.valueOf(100D));
-        when(watchesStorage.findByIds(new HashSet<>(purchasedWatchIds)))
-                .thenReturn(Set.of(watch));
+        HashSet<String> watchIds = new HashSet<>(purchasedWatchIds);
+        Set<Watch> watches = Set.of(watch);
+        when(watchesStorage.findByIds(watchIds))
+                .thenReturn(watches);
 
         Basket expectedBasket = new Basket(Map.of(watch, BigDecimal.ONE));
 
@@ -80,6 +88,7 @@ class CreateBasketServiceTest {
         assertThat(actualBasket)
                 .usingRecursiveComparison()
                 .isEqualTo(expectedBasket);
+        verify(watchesValidationService).validate(watches, watchIds);
         verifyNoMoreInteractions(watchesStorage);
     }
 
@@ -91,8 +100,10 @@ class CreateBasketServiceTest {
 
         // mock WatchesStorage
         Watch watch = new Watch(watchId, "Rolex", BigDecimal.valueOf(100D));
-        when(watchesStorage.findByIds(new HashSet<>(purchasedWatchIds)))
-                .thenReturn(Set.of(watch));
+        HashSet<String> watchIds = new HashSet<>(purchasedWatchIds);
+        Set<Watch> watches = Set.of(watch);
+        when(watchesStorage.findByIds(watchIds))
+                .thenReturn(watches);
 
         Basket expectedBasket = new Basket(Map.of(watch, BigDecimal.valueOf(3L)));
 
@@ -103,6 +114,7 @@ class CreateBasketServiceTest {
         assertThat(actualBasket)
                 .usingRecursiveComparison()
                 .isEqualTo(expectedBasket);
+        verify(watchesValidationService).validate(watches, watchIds);
         verifyNoMoreInteractions(watchesStorage);
     }
 
@@ -129,8 +141,10 @@ class CreateBasketServiceTest {
         Watch watch2 = new Watch(watchId2, "Michael Kors", BigDecimal.valueOf(80D));
         Watch watch3 = new Watch(watchId3, "Swatch", BigDecimal.valueOf(50D));
         Watch watch4 = new Watch(watchId4, "Casio", BigDecimal.valueOf(30D));
-        when(watchesStorage.findByIds(new HashSet<>(purchasedWatchIds)))
-                .thenReturn(Set.of(watch1, watch2, watch3, watch4));
+        Set<Watch> watches = Set.of(watch1, watch2, watch3, watch4);
+        HashSet<String> watchIds = new HashSet<>(purchasedWatchIds);
+        when(watchesStorage.findByIds(watchIds))
+                .thenReturn(watches);
 
         Basket expectedBasket = new Basket(
                 Map.of(
@@ -148,6 +162,41 @@ class CreateBasketServiceTest {
         assertThat(actualBasket)
                 .usingRecursiveComparison()
                 .isEqualTo(expectedBasket);
+        verify(watchesValidationService).validate(watches, watchIds);
         verifyNoMoreInteractions(watchesStorage);
+    }
+
+    @Test
+    void createBasket_WhenValidationNotPassed_ShouldPropagateException() {
+        // Given
+        String watchId1 = "001";
+        String watchId2 = "002";
+        String notExistingWatchId = "notExistingWatchId";
+        List<String> purchasedWatchIds = List.of(
+                watchId1,
+                watchId2,
+                notExistingWatchId
+        );
+
+        // mock WatchesStorage
+        Watch watch1 = new Watch(watchId1, "Rolex", BigDecimal.valueOf(100D));
+        Watch watch2 = new Watch(watchId2, "Michael Kors", BigDecimal.valueOf(80D));
+        Set<Watch> watches = Set.of(watch1, watch2);
+        HashSet<String> watchIds = new HashSet<>(purchasedWatchIds);
+        when(watchesStorage.findByIds(watchIds))
+                .thenReturn(watches);
+
+        // mock WatchesValidationService
+        doThrow(WatchesValidationException.class)
+                .when(watchesValidationService)
+                .validate(watches, watchIds);
+
+        // When
+        // Then
+        assertThrows(
+                WatchesValidationException.class,
+                () -> createBasketService.createBasket(purchasedWatchIds)
+        );
+        verifyNoMoreInteractions(watchesStorage, watchesValidationService);
     }
 }
