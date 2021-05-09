@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.math.BigDecimal.ZERO;
+import static java.math.RoundingMode.HALF_UP;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -45,7 +46,7 @@ class BasketSumCalculationServiceTest {
         when(createBasketService.createBasket(purchasedWatchIds))
                 .thenReturn(Basket.emptyBasket());
 
-        BigDecimal expectedSum = ZERO;
+        BigDecimal expectedSum = ZERO.setScale(2, HALF_UP);
 
         // When
         BigDecimal actualSum = basketSumCalculationService.calculate(purchasedWatchIds);
