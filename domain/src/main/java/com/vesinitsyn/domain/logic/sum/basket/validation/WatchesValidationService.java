@@ -2,11 +2,13 @@ package com.vesinitsyn.domain.logic.sum.basket.validation;
 
 import com.vesinitsyn.domain.logic.sum.basket.validation.exception.WatchesValidationException;
 import com.vesinitsyn.domain.model.Watch;
+import org.springframework.stereotype.Service;
 
 import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
 
+@Service
 public class WatchesValidationService {
 
     public void validate(Set<Watch> watches, Set<String> expectedWatchIds) {

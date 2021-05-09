@@ -7,6 +7,7 @@ import com.vesinitsyn.domain.model.NoDiscount;
 import com.vesinitsyn.domain.model.Watch;
 import com.vesinitsyn.infrastructure.DiscountsStorage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.Set;
 import static java.math.BigDecimal.ZERO;
 import static java.util.stream.Collectors.toSet;
 
+@Service
 @RequiredArgsConstructor
 public class BasketSumCalculationService {
 

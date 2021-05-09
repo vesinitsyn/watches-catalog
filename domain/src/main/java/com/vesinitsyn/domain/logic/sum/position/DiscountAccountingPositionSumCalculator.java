@@ -3,6 +3,7 @@ package com.vesinitsyn.domain.logic.sum.position;
 import com.vesinitsyn.domain.model.Discount;
 import com.vesinitsyn.domain.model.DiscountType;
 import com.vesinitsyn.domain.model.Watch;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.function.Function;
 
 import static java.util.stream.Collectors.toMap;
 
+@Service
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class DiscountAccountingPositionSumCalculator {
 

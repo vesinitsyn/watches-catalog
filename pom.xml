@@ -11,6 +11,7 @@
     <modules>
         <module>domain</module>
         <module>storage</module>
+        <module>application</module>
     </modules>
 
     <parent>

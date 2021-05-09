@@ -5,6 +5,7 @@ import com.vesinitsyn.domain.model.Basket;
 import com.vesinitsyn.domain.model.Watch;
 import com.vesinitsyn.infrastructure.WatchesStorage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -15,6 +16,7 @@ import static com.vesinitsyn.domain.model.Basket.emptyBasket;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.*;
 
+@Service
 @RequiredArgsConstructor
 public class CreateBasketService {
 

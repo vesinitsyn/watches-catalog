@@ -2,11 +2,13 @@ package com.vesinitsyn.domain.logic.sum.position;
 
 import com.vesinitsyn.domain.model.DiscountType;
 import com.vesinitsyn.domain.model.QuantityDiscount;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
 import static com.vesinitsyn.domain.model.DiscountType.QUANTITY;
 
+@Service
 public class QuantityDiscountPositionSumCalculator implements PositionSumCalculator<QuantityDiscount> {
 
     @Override
