@@ -42,7 +42,7 @@ class NoDiscountPositionSumCalculatorTest {
     ) {
         // When
         BigDecimal actualPositionSum = noDiscountPositionSumCalculator.calculate(
-                price, quantity, new NoDiscount()
+                price, quantity, NoDiscount.getInstance()
         );
 
         // Then

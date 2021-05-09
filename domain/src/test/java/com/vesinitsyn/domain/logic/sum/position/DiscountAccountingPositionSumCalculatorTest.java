@@ -74,7 +74,7 @@ class DiscountAccountingPositionSumCalculatorTest {
         BigDecimal price = BigDecimal.valueOf(50D);
         Watch watch = new Watch("003", "Swatch", price);
         BigDecimal quantity = BigDecimal.valueOf(3D);
-        NoDiscount discount = new NoDiscount();
+        NoDiscount discount = NoDiscount.getInstance();
 
         BigDecimal expectedPositionSum = BigDecimal.valueOf(150D);
 
