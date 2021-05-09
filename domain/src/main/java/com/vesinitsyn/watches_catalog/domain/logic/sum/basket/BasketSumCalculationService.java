@@ -15,11 +15,14 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.math.BigDecimal.ZERO;
+import static java.math.RoundingMode.HALF_UP;
 import static java.util.stream.Collectors.toSet;
 
 @Service
 @RequiredArgsConstructor
 public class BasketSumCalculationService {
+
+    private static final int MONEY_SCALE = 2;
 
     private final CreateBasketService createBasketService;
     private final DiscountsStorage discountsStorage;
@@ -28,6 +31,10 @@ public class BasketSumCalculationService {
     public BigDecimal calculate(List<String> purchasedWatchIds) {
         Basket basket = createBasketService.createBasket(purchasedWatchIds);
         Map<Watch, BigDecimal> quantityByWatch = basket.getQuantityByWatch();
+        return calculateSum(quantityByWatch).setScale(MONEY_SCALE, HALF_UP);
+    }
+
+    private BigDecimal calculateSum(Map<Watch, BigDecimal> quantityByWatch) {
         if (quantityByWatch.isEmpty()) {
             return ZERO;
         }
