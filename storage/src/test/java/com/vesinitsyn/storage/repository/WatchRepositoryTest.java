@@ -98,13 +98,4 @@ class WatchRepositoryTest extends AbstractTest {
                 .usingComparatorForElementFieldsWithType(BIG_DECIMAL_COMPARATOR, BigDecimal.class)
                 .containsExactlyInAnyOrderElementsOf(expectedWatches);
     }
-
-    private WatchEntity persistWatch(String watchId, String name, BigDecimal price) {
-        WatchEntity watchEntity = new WatchEntity()
-                .setId(watchId)
-                .setName(name)
-                .setPrice(price);
-        entityManager.persist(watchEntity);
-        return watchEntity;
-    }
 }
